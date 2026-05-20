@@ -100,3 +100,47 @@
     font-size: 25px;
   }
 }
+
+/* ===== Home animations ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes floatSlow {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+/* Apply animations to landing elements */
+.landing-text {
+  opacity: 0;
+  animation: fadeInUp 900ms ease both;
+}
+
+.landing-pic img {
+  animation: floatSlow 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+.landing-text .badge {
+  display: inline-block;
+  animation: pulse 2.8s ease-in-out infinite;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .landing-text,
+  .landing-pic img,
+  .landing-text .badge {
+    animation: none !important;
+    transition: none !important;
+  }
+}

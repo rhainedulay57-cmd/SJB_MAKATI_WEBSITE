@@ -84,7 +84,7 @@
 }
 
 .bookings-table thead {
-    background-color: #34495e;
+    background-color: var(--accent);
     color: white;
 }
 
@@ -173,6 +173,39 @@
     transform: scale(1.05);
 }
 
+.btn-delete {
+    background-color: #c0392b;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 0 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-delete:hover {
+    background-color: #a93226;
+    transform: scale(1.05);
+}
+
+.btn-view {
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 0 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-view:hover {
+    background-color: var(--secondary);
+    transform: scale(1.05);
+}
+
 .btn-cancel {
     background-color: #95a5a6;
     color: white;
@@ -182,6 +215,9 @@
     background-color: #7f8c8d;
 }
 
+.submit-btn {
+    font-family: 'Poppins';
+}
 /* Action buttons layout */
 .actions-cell { width: 220px; }
 .action-buttons { display: flex; gap: 8px; justify-content: flex-end; }
@@ -194,7 +230,7 @@
     margin-top: 12px;
 }
 .processed-table thead {
-    background-color: #2c3e50;
+    background-color: var(--accent);
     color: white;
 }
 .processed-table th {
@@ -225,20 +261,30 @@
 }
 
 .requests-table thead {
-    background-color: #34495e;
+    background-color: var(--accent);
     color: white;
 }
 
-.requests-table th {
+.mass-requests-table {
+    table-layout: fixed;
+}
+
+.mass-requests-table th {
     padding: 12px;
     text-align: left;
     font-weight: 700;
+    width: 14.2857%;
 }
 
-.requests-table td {
+.mass-requests-table td {
     padding: 12px;
     border-bottom: 1px solid #ecf0f1;
+    width: 14.2857%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
+
 
 .requests-table tbody tr:hover { background-color: #f8f9fa; }
 
@@ -449,9 +495,10 @@ header a:hover {
 
 
 .admin-label {
-    color: #f39c12;
+    color: var(--accent);
     font-weight: bold;
     margin-right: 10px;
+    box-shadow: var(--box-shadow);
 }
 
 .logout-btn {

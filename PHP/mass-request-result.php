@@ -11,7 +11,6 @@
     $service = isset($_POST['service']) ? implode(", ", $_POST['service']) : '';
     $date_filled = $_POST['date_filled'] ?? '';
     $mass_type = isset($_POST['mass_type']) ? implode(", ", $_POST['mass_type']) : '';
-    $attendees = $_POST['attendees'] ?? '';
     $intention = $_POST['intention'] ?? '';
     $pref_sched = $_POST['pref_sched'] ?? '';
     $pref_time = $_POST['pref_time'] ?? '';
@@ -25,15 +24,44 @@
     $mobile_no = $_POST['mobile_no'] ?? '';
     $email = $_POST['email'] ?? '';
 
-    $sql = "INSERT INTO `mass_blessing` (service, date_filled, mass_type, attendees, intention, pref_sched, pref_time, alter_sched, alter_time, company_name, company_owner, address, contact_person, department, mobile_no, email, status)
-            VALUES ('$service', '$date_filled', '$mass_type', '$attendees', '$intention', '$pref_sched', '$pref_time', '$alter_sched', '$alter_time', '$company_name', '$company_owner', '$address', '$contact_person', '$department', '$mobile_no', '$email', 'pending')";
+    // 'attendees' field was removed from the form; do not include it in the INSERT
+    $stmt = $conn->prepare(
+        "INSERT INTO `mass_blessing` (service, date_filled, mass_type, intention, pref_sched, pref_time, alter_sched, alter_time, company_name, company_owner, address, contact_person, department, mobile_no, email, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')"
+    );
 
-    if ($conn->query($sql) === TRUE) {
+    if (!$stmt) {
+        echo json_encode(["success" => false, "message" => "Prepare failed: " . $conn->error]);
+        $conn->close();
+        exit();
+    }
+
+    $stmt->bind_param(
+        "sssssssssssssss",
+        $service,
+        $date_filled,
+        $mass_type,
+        $intention,
+        $pref_sched,
+        $pref_time,
+        $alter_sched,
+        $alter_time,
+        $company_name,
+        $company_owner,
+        $address,
+        $contact_person,
+        $department,
+        $mobile_no,
+        $email
+    );
+
+    if ($stmt->execute()) {
         $request_id = $conn->insert_id;
         echo json_encode(["success" => true, "request_id" => $request_id, "message" => "Your mass or blessing request has been submitted successfully!"]);
     } else {
-        echo json_encode(["success" => false, "message" => "Error: " . $conn->error]);
+        echo json_encode(["success" => false, "message" => "Error: " . $stmt->error]);
     }
 
+    $stmt->close();
     $conn->close();
 ?>

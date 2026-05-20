@@ -36,15 +36,6 @@ if ($result) {
     }
 }
 
-// Fetch contact form submissions
-$contact_requests = [];
-$result = $conn->query("SELECT * FROM `contact_us_form` ORDER BY id ASC");
-if ($result) {
-    while ($row = $result->fetch_assoc()) {
-        $contact_requests[] = $row;
-    }
-}
-
 // --- Sacrament bookings management (merged from manage-sacrament-bookings.php)
 
 // Handle approve/decline actions via POST (returns JSON)
@@ -64,6 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             approveBooking($conn, $booking_id, $_POST['admin_notes'] ?? '');
         } elseif ($action === 'decline') {
             declineBooking($conn, $booking_id, $_POST['decline_reason'] ?? '');
+        } elseif ($action === 'delete') {
+            deleteBooking($conn, $booking_id);
         } else {
             throw new Exception('Invalid action');
         }
@@ -154,6 +147,37 @@ function declineBooking($conn, $booking_id, $decline_reason) {
 }
 
 /**
+ * Delete Booking and related sacrament details
+ */
+function deleteBooking($conn, $booking_id) {
+    // Delete child rows first to satisfy foreign key constraints
+    $tables = [
+        'wedding_bookings',
+        'baptism_bookings',
+        'funeral_bookings'
+    ];
+
+    foreach ($tables as $table) {
+        $stmt = $conn->prepare("DELETE FROM $table WHERE booking_id = ?");
+        if ($stmt) {
+            $stmt->bind_param("s", $booking_id);
+            if (!$stmt->execute()) {
+                throw new Exception("Error deleting from $table: " . $stmt->error);
+            }
+            $stmt->close();
+        }
+    }
+
+    $stmt = $conn->prepare("DELETE FROM sacrament_bookings WHERE booking_id = ?");
+    $stmt->bind_param("s", $booking_id);
+
+    if (!$stmt->execute()) {
+        throw new Exception("Error deleting booking: " . $stmt->error);
+    }
+    $stmt->close();
+}
+
+/**
  * Get Full Booking Details
  */
 function getBookingDetails($conn, $booking_id) {
@@ -227,7 +251,6 @@ function sendDeclineEmail($booking, $decline_reason) {
             <ul>
                 <li class="sign-in-btn">
                     <span class="admin-label">Admin</span>
-                    <a href="../PHP/sjb-logout.php" title="Logout" class="logout-btn">Logout</a>
                 </li>
             </ul>
         </nav>
@@ -254,13 +277,11 @@ function sendDeclineEmail($booking, $decline_reason) {
                 </div>
             </div>
             <?php if (count($mass_requests) > 0): ?>
-                <table class="requests-table">
+                <table class="requests-table mass-requests-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Service</th>
                             <th>Date Filled</th>
-                            <th>Attendees</th>
                             <th>Contact Person</th>
                             <th>Email</th>
                             <th>Mobile No.</th>
@@ -271,16 +292,17 @@ function sendDeclineEmail($booking, $decline_reason) {
                     <tbody>
                         <?php foreach ($mass_requests as $req): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($req['id']); ?></td>
                                 <td><?php echo htmlspecialchars(implode(', ', (array)$req['service'])); ?></td>
                                 <td><?php echo htmlspecialchars($req['date_filled']); ?></td>
-                                <td><?php echo htmlspecialchars($req['attendees']); ?></td>
                                 <td><?php echo htmlspecialchars($req['contact_person']); ?></td>
                                 <td><?php echo htmlspecialchars($req['email']); ?></td>
                                 <td><?php echo htmlspecialchars($req['mobile_no']); ?></td>
                                 <td><span class="status-badge <?php echo htmlspecialchars($req['status']); ?>"><?php echo ucfirst(htmlspecialchars($req['status'])); ?></span></td>
-                                <td>
-                                    <button class="btn-view" onclick="viewDetails('mass', <?php echo $req['id']; ?>)">View</button>
+                                <td class="actions-cell" onclick="event.stopPropagation();">
+                                    <div class="action-buttons">
+                                        <button class="btn-view" onclick="viewDetails('mass', <?php echo intval($req['id']); ?>)">View</button>
+                                        <button class="btn-delete" onclick="deleteMassRequest(<?php echo intval($req['id']); ?>)">🗑 Delete</button>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -311,7 +333,7 @@ function sendDeclineEmail($booking, $decline_reason) {
                 </div>
 
                 <!-- Pending Bookings -->
-                <h3 style="margin-top:0;">⏳ Pending Bookings</h3>
+                <h3 style="margin-top:0;">Pending Bookings</h3>
                 <?php if (count($bookings) > 0): ?>
                     <table class="bookings-table">
                         <thead>
@@ -329,19 +351,20 @@ function sendDeclineEmail($booking, $decline_reason) {
                                     <td>
                                         <span class="badge badge-<?php echo $booking['sacrament_type']; ?>">
                                             <?php
-                                                $icon = '📋';
                                                 if ($booking['sacrament_type'] === 'wedding') $icon = '💍';
                                                 elseif ($booking['sacrament_type'] === 'baptism') $icon = '👶';
                                                 elseif ($booking['sacrament_type'] === 'funeral') $icon = '🙏';
-                                                echo $icon . ' ' . ucfirst($booking['sacrament_type']);
+                                                echo ucfirst($booking['sacrament_type']);
                                             ?>
                                         </span>
                                     </td>
                                     <td><?php echo date('M d, Y', strtotime($booking['created_at'])); ?></td>
                                     <td class="actions-cell" onclick="event.stopPropagation();">
                                         <div class="action-buttons">
+                                            <button class="btn-view" onclick="viewBookingDetails('<?php echo htmlspecialchars($booking['booking_id']); ?>', '<?php echo htmlspecialchars($booking['sacrament_type']); ?>')">View</button>
                                             <button class="btn-approve" onclick="approveBooking('<?php echo htmlspecialchars($booking['booking_id']); ?>')">✓ Approve</button>
                                             <button class="btn-decline" onclick="declineBooking('<?php echo htmlspecialchars($booking['booking_id']); ?>')">✗ Decline</button>
+                                            <button class="btn-delete" onclick="deleteBooking('<?php echo htmlspecialchars($booking['booking_id']); ?>')">🗑 Delete</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -353,7 +376,7 @@ function sendDeclineEmail($booking, $decline_reason) {
                 <?php endif; ?>
 
                 <!-- Processed Bookings -->
-                <h3 style="margin-top:32px;">📁 Processed Bookings (Approved / Declined)</h3>
+                <h3 style="margin-top:32px;">Processed Bookings (Approved / Declined)</h3>
                 <?php if (count($processed_bookings) > 0): ?>
                     <table class="processed-table">
                         <thead>
@@ -374,7 +397,10 @@ function sendDeclineEmail($booking, $decline_reason) {
                                     <td><?php echo ucfirst($p['status']); ?></td>
                                     <td><?php echo htmlspecialchars($p['admin_notes'] ?? ''); ?></td>
                                     <td><?php echo date('M d, Y', strtotime($p['created_at'])); ?></td>
-                                    <td onclick="event.stopPropagation();"><button class="btn-view" onclick="viewBookingDetails('<?php echo htmlspecialchars($p['booking_id']); ?>', '<?php echo htmlspecialchars($p['sacrament_type']); ?>')">View</button></td>
+                                    <td onclick="event.stopPropagation();">
+                                        <button class="btn-view" onclick="viewBookingDetails('<?php echo htmlspecialchars($p['booking_id']); ?>', '<?php echo htmlspecialchars($p['sacrament_type']); ?>')">View</button>
+                                        <button class="btn-delete" onclick="deleteBooking('<?php echo htmlspecialchars($p['booking_id']); ?>')">🗑 Delete</button>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -539,8 +565,41 @@ function viewDetails(type, id) {
         .then(data => {
             let html = "<h3>Details</h3>";
 
+            const labels = {
+                service: "Service",
+                date_filled: "Date Filled",
+                mass_type: "Type of Mass",
+                intention: "Mass Intention",
+                pref_sched: "Preferred Schedule",
+                pref_time: "Preferred Time",
+                alter_sched: "Alternative Schedule",
+                alter_time: "Alternative Time",
+                company_name: "Company Name",
+                company_owner: "Company Owner",
+                address: "Venue Address",
+                contact_person: "Contact Person",
+                department: "Position/Department",
+                mobile_no: "Mobile No.",
+                email: "Email Address",
+                status: "Status"
+            };
+
+            const statusLabels = {
+                pending: 'Pending',
+                approved: 'Approved',
+                declined: 'Declined',
+                '0': 'Pending',
+                '1': 'Approved',
+                '2': 'Declined'
+            };
+
             for (const key in data) {
-                html += `<p><strong>${key}:</strong> ${data[key]}</p>`;
+                if (type === "mass" && key === 'status') {
+                    continue;
+                }
+                const label = labels[key] || key;
+                const value = key === 'status' ? (statusLabels[data[key]] || data[key]) : data[key];
+                html += `<p><strong>${label}:</strong> ${value}</p>`;
             }
 
             // Add Accept and Delete buttons for mass requests
@@ -551,7 +610,7 @@ function viewDetails(type, id) {
                         <button class="btn-decline" onclick="declineMassRequest(${id})" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">✗ Decline</button>
                     </div>`;
                 } else {
-                    html += `<p><strong>Status:</strong> ${data.status.charAt(0).toUpperCase() + data.status.slice(1)}</p>`;
+                    html += `<p><strong>Status:</strong> ${statusLabels[data.status] || (data.status.charAt(0).toUpperCase() + data.status.slice(1))}</p>`;
                 }
             }
 
@@ -635,6 +694,31 @@ function deleteMassRequest(id) {
         })
         .catch(err => {
             alert("Error: " + err);
+        });
+    }
+}
+
+function deleteBooking(bookingId) {
+    if (confirm("Are you sure you want to delete this booking?")) {
+        const formData = new FormData();
+        formData.append('action', 'delete');
+        formData.append('booking_id', bookingId);
+
+        fetch('', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert('Booking deleted successfully.');
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(err => {
+            alert('Error: ' + err);
         });
     }
 }

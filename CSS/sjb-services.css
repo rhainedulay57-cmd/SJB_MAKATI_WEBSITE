@@ -1,6 +1,19 @@
 .time {
     font-size: 20px
 }
+
+h1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem auto;
+    padding: 2.5px 5px;
+    width: 300px;
+    color: var(--accent);
+    background: transparent;
+    box-shadow: none;
+}
+
 h2 {
     display: flex;
     justify-content: center;
@@ -181,6 +194,7 @@ hr {
 }
 
 .tab-btn {
+    font-family: 'Poppins';
     padding: 12px 24px;
     border: 2px solid var(--secondary);
     background: transparent;
@@ -316,11 +330,11 @@ hr {
 }
 
 .submit-btn.urgent-btn {
-    background: #d32f2f;
+    background: var(--accent);
 }
 
 .submit-btn.urgent-btn:hover {
-    background: #b71c1c;
+    background: var(--secondary);
 }
 
 /* STATUS CHECK */
@@ -532,10 +546,13 @@ hr {
     padding: 5rem 5rem;
 
     span {
+        width: 75%;
+        margin: auto;
         font-size: 20px;
         display: flex;
         justify-content: center;
         align-items: center;
+        text-align: center;
     }
     .punc {
         text-align: center;
@@ -580,6 +597,65 @@ hr {
     justify-content: center;
     align-items: center;
 
+    p {
+        font-size: 20px;
+    }
+}
+
+.weddings-picture {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 5rem;
+    margin-right: 6rem;
+}
+
+.weddings-picture img,
+.wedding-pictures {
+    width: 280px;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+}
+
+/* FUNERALS INFO */
+.funerals {
+    background: var(--primary);
+    padding: 5rem 5rem;
+    box-shadow: var(--box-shadow-up);
+    border-bottom: 1px solid black;
+
+    .funeral-price {
+        margin-left: 1.5rem;
+    }
+}
+
+.funerals-first-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5rem auto;
+    width: 75%;
+}
+
+.funerals-second-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5rem auto;
+    width: 75%;
+}
+
+.rules-regulations-container {
+    justify-content: center;
+    align-items: center;
+    max-width: 75%;
+    margin: 5rem auto;
+
+    h1 {
+        width: 100%;
+    }
     p {
         font-size: 20px;
     }

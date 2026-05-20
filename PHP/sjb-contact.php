@@ -58,15 +58,6 @@
                             <a href="../PHP/sjb-contact.php#donation">Donation / Love Offering</a>
                         </div>
                 </li>
-
-                <li class="sign-in-btn">
-                    <a href="../PHP/sjb-register.php" title="Sign In / Register">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                    </a>
-                </li>
             </ul>
         </nav>
 
@@ -81,18 +72,37 @@
             <p>Conveniently book your wedding, baptism, or funeral mass online</p>
         </div>
 
+        <!-- PAYMENT INFORMATION SECTION -->
+        <div style="background-color: #f8f9fa; border-left: 4px solid var(--accent); padding: 20px; margin-bottom: 30px; border-radius: 4px;">
+            <h3 style="margin-top: 0; color: #2c3e50;">Payment Instructions</h3>
+            <p style="margin-bottom: 15px;"><strong>Please send your payment to:</strong></p>
+            
+            <div style="background: white; padding: 15px; border-radius: 4px; margin-bottom: 10px;">
+                <p style="margin: 8px 0;"><strong>GCash:</strong> <span style="font-size: 15px; color: #27ae60;">0917-123-4567</span></p>
+                <p style="margin: 8px 0; color: #7f8c8d; font-size: 0.9em;">Name: SJB MAKATI</p>
+            </div>
+
+            <div style="background: white; padding: 15px; border-radius: 4px; margin-bottom: 10px;">
+                <p style="margin: 8px 0;"><strong>Bank Transfer:</strong></p>
+                <p style="margin: 8px 0; color: #555;">BDO Account: 123456789<br>Account Name: SJB MAKATI</p>
+            </div>
+
+            <p style="margin-top: 15px; color: #e74c3c; font-weight: bold;">Important: Upload your payment proof when submitting the booking form</p>
+        </div>
+
         <!-- TABS SECTION -->
         <div class="booking-tabs">
-            <button class="tab-btn active" onclick="switchTab('wedding', this)">💍 Weddings</button>
-            <button class="tab-btn" onclick="switchTab('baptism', this)">👶 Baptisms</button>
-            <button class="tab-btn" onclick="switchTab('funeral', this)">🙏 Funerals</button>
-            <button class="tab-btn" onclick="switchTab('status', this)">📋 Check Status</button>
+            <button class="tab-btn active" onclick="switchTab('wedding', this)">Weddings</button>
+            <button class="tab-btn" onclick="switchTab('baptism', this)">Baptisms</button>
+            <button class="tab-btn" onclick="switchTab('funeral', this)">Funerals</button>
+            <button class="tab-btn" onclick="switchTab('status', this)">Check Status</button>
         </div>
 
         <!-- WEDDING TAB -->
         <div id="wedding-tab" class="tab-content active">
-            <h2>💍 Wedding Booking</h2>
-            <form id="weddingForm" class="booking-form">
+            <h2>Wedding Booking</h2>
+            <form id="weddingForm" class="booking-form" action="submit-sacrament-booking.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="sacrament_type" value="wedding">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="groom_name">Groom's Full Name *</label>
@@ -106,11 +116,11 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="groom_email">Groom's Email *</label>
+                        <label for="groom_email">Contact Email *</label>
                         <input type="email" id="groom_email" name="groom_email" required>
                     </div>
                     <div class="form-group">
-                        <label for="groom_phone">Groom's Phone *</label>
+                        <label for="groom_phone">Contact Phone *</label>
                         <input type="tel" id="groom_phone" name="groom_phone" required>
                     </div>
                 </div>
@@ -126,26 +136,49 @@
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="guest_count">Estimated Number of Guests *</label>
-                        <input type="number" id="guest_count" name="guest_count" required>
-                    </div>
-                </div>
-
                 <div class="form-group">
                     <label for="special_requests">Special Requests or Notes</label>
                     <textarea id="special_requests" name="special_requests" rows="4"></textarea>
                 </div>
 
-                <button type="submit" class="submit-btn">Submit Wedding Booking</button>
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+                <h3 style="margin-top: 20px; color: #2c3e50;">Requirements & Payment Documents</h3>
+
+                <div class="form-group">
+                    <label for="wedding_requirements">Upload Requirements Documents (PDF, JPG, PNG) *</label>
+                    <small>Upload Baptismal/Confirmation Certificates</small>
+                    <input type="file" id="baptismal_confirmation" name="baptismal_confirmation" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,.bmp" required>
+                    <small>Upload Marriage Licence</small>
+                    <input type="file" id="marriage_license" name="marriage_license" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,.bmp" required>
+                    <small>Upload 2x2 Individual photos of Bride and Groom</small>
+                    <input type="file" id="individual_photos" name="individual_photos" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,.bmp" required>
+                    <small>Upload Banns and Permits</small>
+                    <input type="file" id="banns_permits" name="banns_permits" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,.bmp" required>
+                    <small>Upload CENOMAR</small>
+                    <input type="file" id="cenomar" name="cenomar" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,.bmp" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="wedding_deposit_proof">Deposit Payment Proof (PHP 10,000) - GCash or Card *</label>
+                    <small>Upload screenshot or receipt showing deposit payment proof</small>
+                    <input type="file" id="wedding_deposit_proof" name="wedding_deposit_proof" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,.bmp" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="wedding_contribution_proof">Contribution Payment Proof (PHP 29,500) - GCash or Card *</label>
+                    <small>Upload screenshot or receipt showing full contribution payment</small>
+                    <input type="file" id="wedding_contribution_proof" name="wedding_contribution_proof" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,.bmp" required>
+                </div>
+
+                <button type="submit" class="submit-btn" style="font-family: 'Poppins';">Submit Booking</button>
             </form>
         </div>
 
         <!-- BAPTISM TAB -->
         <div id="baptism-tab" class="tab-content">
-            <h2>👶 Baptism Booking</h2>
-            <form id="baptismForm" class="booking-form">
+            <h2>Baptism Booking</h2>
+            <form id="baptismForm" class="booking-form" action="submit-sacrament-booking.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="sacrament_type" value="baptism">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="baptism_type">Type of Baptism *</label>
@@ -156,55 +189,94 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="candidate_name">Child/Candidate's Full Name *</label>
+                        <label for="candidate_name">Child Full Name *</label>
                         <input type="text" id="candidate_name" name="candidate_name" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="parent1_name">Parent/Guardian 1 Name *</label>
+                        <label for="parent1_name">Father Name *</label>
                         <input type="text" id="parent1_name" name="parent1_name" required>
                     </div>
+
                     <div class="form-group">
-                        <label for="parent1_email">Parent/Guardian 1 Email *</label>
-                        <input type="email" id="parent1_email" name="parent1_email" required>
+                        <label for="parent2_name">Mother Name *</label>
+                        <input type="text" id="parent2_name" name="parent2_name" required>
                     </div>
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="parent1_phone">Parent/Guardian 1 Phone *</label>
-                        <input type="tel" id="parent1_phone" name="parent1_phone" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="godparent_name">Godparent/Sponsor Name *</label>
-                        <input type="text" id="godparent_name" name="godparent_name" required>
-                    </div>
+                        <div class="form-group">
+                            <label for="parent1_email">Contact Email *</label>
+                            <input type="email" id="parent1_email" name="parent1_email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="parent1_phone">Contact Phone *</label>
+                            <input type="tel" id="parent1_phone" name="parent1_phone" required>
+                        </div>
                 </div>
 
-                <div class="form-row">
                     <div class="form-group">
                         <label for="baptism_date">Desired Baptism Date *</label>
                         <input type="date" id="baptism_date" name="baptism_date" required>
                     </div>
-                </div>
 
                 <div class="form-group">
                     <label for="special_requests_bap">Special Requests or Notes</label>
                     <textarea id="special_requests_bap" name="special_requests_bap" rows="4"></textarea>
                 </div>
 
-                <button type="submit" class="submit-btn">Submit Baptism Booking</button>
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+                <h3 style="margin-top: 20px; color: #2c3e50;">Requirements & Payment Documents</h3>
+
+                <div class="form-group">
+                    <label for="baptism_requirements">Upload Requirements Documents (PDF, JPG, PNG) *</label>
+                    <small>Upload Birth Certificate</small>
+                    <input type="file" id="birth_certificate" name="birth_certificate" accept=".pdf,.jpg,.jpeg,.png" required>
+                    <small>Upload Confirmation Certificate of Godparent</small>
+                    <input type="file" id="confirmation_certificate" name="confirmation_certificate" accept=".pdf,.jpg,.jpeg,.png" required>
+                    <small>Upload Attendance Proof</small>
+                    <input type="file" id="attendance_proof" name="attendance_proof" accept=".pdf,.jpg,.jpeg,.png" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="baptism_donation_proof">Baptismal Fees - GCash or Card *</label>
+                    <small>Upload screenshot or receipt showing payment</small>
+                    <small><b>₱1,500 + 100 per godparent / 200 per pair</b></small>
+                    <input type="file" id="baptism_donation_proof" name="baptism_donation_proof" accept=".pdf,.jpg,.jpeg,.png" required>
+                </div>
+
+                <button type="submit" class="submit-btn" style="font-family: 'Poppins';">Submit Booking</button>
             </form>
         </div>
 
         <!-- FUNERAL TAB -->
         <div id="funeral-tab" class="tab-content">
-            <h2 style="color: #8B0000;">🙏 Funeral Mass Booking</h2>
-            <p style="color: #d9534f; font-weight: bold;">⏰ URGENT - We respond to funeral requests same day</p>
+            <h2 style="color: #8B0000;">Funeral Booking</h2>
+            <p style="color: #d9534f; font-weight: bold;">URGENT - We respond to funeral bookings    same day</p>
             
-            <form id="funeralForm" class="booking-form">
+            <div style="background-color: #f8f9fa; border-left: 4px solid var(--accent); padding: 20px; margin-bottom: 20px; border-radius: 4px;">
+                <h3 style="margin-top: 0; color: #2c3e50;">Available Chapels</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background: white; padding: 12px; border-radius: 4px;">
+                        <p><strong>Faith Chapel</strong> - ₱12,000/day | 130 persons</p>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 4px;">
+                        <p><strong>Charity Chapel</strong> - ₱10,000/day | 120 persons</p>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 4px;">
+                        <p><strong>Hope Chapel</strong> - ₱7,000/day | 60 persons</p>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 4px;">
+                        <p><strong>Love Chapel</strong> - ₱3,500/day | 30 persons</p>
+                    </div>
+                </div>
+            </div>
+            
+            <form id="funeralForm" class="booking-form" action="submit-sacrament-booking.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="sacrament_type" value="funeral">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="deceased_name">Deceased's Full Name *</label>
@@ -218,7 +290,7 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="requestor_name">Family Contact Name *</label>
+                        <label for="requestor_name">Family Name *</label>
                         <input type="text" id="requestor_name" name="requestor_name" required>
                     </div>
                     <div class="form-group">
@@ -240,7 +312,20 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="funeral_date">Desired Funeral Mass Date *</label>
+                        <label for="funeral_chapel">Preferred Chapel *</label>
+                        <select id="funeral_chapel" name="funeral_chapel" required>
+                            <option value="">-- Select Chapel --</option>
+                            <option value="Faith Chapel">Faith Chapel (130 persons, ₱12,000/day)</option>
+                            <option value="Charity Chapel">Charity Chapel (120 persons, ₱10,000/day)</option>
+                            <option value="Hope Chapel">Hope Chapel (60 persons, ₱7,000/day)</option>
+                            <option value="Love Chapel">Love Chapel (30 persons, ₱3,500/day)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="funeral_date">Desired Funeral Date *</label>
                         <input type="date" id="funeral_date" name="funeral_date" required>
                     </div>
                     <div class="form-group">
@@ -249,25 +334,33 @@
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="funeral_attendees">Expected Number of Attendees *</label>
-                        <input type="number" id="funeral_attendees" name="funeral_attendees" required>
+                <div class="form-group">
+                    <label>Do you need a Funeral Mass? *</label>
+                    <small style="color: #666; display: block; margin-bottom: 10px;">Note: Only a Catholic priest can officiate. Guest priests must present a "celebret". The parish does not provide graveside services.</small>
+                    <div style="display: flex; gap: 20px;">
+                        <label><input type="radio" name="needs_funeral_mass" value="Yes" required> Yes, I need a Funeral Mass</label>
+                        <label><input type="radio" name="needs_funeral_mass" value="No"> No, Chapel use only</label>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="special_requests_fun">Special Requests or Notes</label>
-                    <textarea id="special_requests_fun" name="special_requests_fun" rows="4"></textarea>
+                    <textarea id="special_requests_fun" name="special_requests_fun" rows="4" placeholder="e.g., specific priest, floral arrangements, etc."></textarea>
                 </div>
 
-                <button type="submit" class="submit-btn urgent-btn">Submit Funeral Booking (URGENT)</button>
+                <div class="form-group">
+                    <label for="funeral_payment_proof">Payment Proof (GCash or Bank Transfer) *</label>
+                    <small>Upload screenshot or receipt showing payment</small>
+                    <input type="file" id="funeral_payment_proof" name="funeral_payment_proof" accept=".pdf,.jpg,.jpeg,.png" required>
+                </div>
+
+                <button type="submit" class="submit-btn urgent-btn" style="font-family: 'Poppins';">Submit Booking</button>
             </form>
         </div>
 
-        <!-- STATUS TAB -->
+        <!-- STATUS TAB -->         
         <div id="status-tab" class="tab-content">
-            <h2>📋 Check Booking Status</h2>
+            <h2>Check Booking Status</h2>
             <p style="max-width: 760px; margin: 0 auto 1.5rem; color: #555; line-height: 1.6;">
                 Enter the <strong>Booking ID</strong> you received after submitting your sacrament booking, and the same email address used for your booking.
                 Then click <strong>Check Status</strong> to view the current status and admin notes.
@@ -283,7 +376,8 @@
                         <input type="email" id="check_email" name="check_email" placeholder="your@email.com">
                     </div>
                 </div>
-                <button type="button" class="submit-btn" onclick="checkBookingStatus()">Check Status</button>
+                <button id="status-check-btn" type="button" class="submit-btn">Check Status</button>
+                <div id="status-error" class="status-error" style="display: none; color: #b00020; margin-top: 1rem;"></div>
             </div>
 
             <div id="status-result" class="status-result" style="display: none;">
@@ -310,7 +404,7 @@
 
 
 <!-- MASS BLESSING REQUEST -->
-    <section id="mass-blessing-request">
+<section id="mass-blessing-request">
 
         <div class="mass-blessing-request-container">
 
@@ -322,13 +416,13 @@
 
                 <!-- TABS FOR MASS REQUEST -->
                 <div class="booking-tabs">
-                    <button class="tab-btn active" onclick="switchTab('mass-form', this)">📋 Submit Request</button>
-                    <button class="tab-btn" onclick="switchTab('mass-status', this)">📊 Check Status</button>
+                    <button class="tab-btn active" onclick="switchTab('mass-form', this)">Submit Request</button>
+                    <button class="tab-btn" onclick="switchTab('mass-status', this)">Check Status</button>
                 </div>
 
                 <!-- SUBMIT REQUEST TAB -->
                 <div id="mass-form-tab" class="tab-content active">
-                    <form class="mass-request-form" id="mass_req_form" onsubmit="submitMassRequest(event)">
+                    <form class="mass-request-form" id="mass_req_form" method="POST">
 
                     <div class="mass-req-row">
                         <div class="mass-req-group">
@@ -341,13 +435,6 @@
                         </div>
 
                         <div class="mass-req-group">
-                            <label>Date Filled *</label>
-                            <p><input type="date" class="short" name="date_filled" required></p>
-                        </div>
-                    </div>
-                    <!-- ROW -->
-                    <div class="mass-req-row">
-                        <div class="mass-req-group">
                             <label>Type of Mass *<br><small>Check both if you need both.</small></label>
 
                             <div class="checkbox-group">
@@ -355,11 +442,12 @@
                                 <p><input type="checkbox" name="mass_type[]" value="Onsite">Onsite</p>
                             </div>
                         </div>
-
+                    </div>
+                    <!-- ROW -->
+                    <div class="mass-req-row">
                         <div class="mass-req-group">
-                            <label>No. of attendees *</label>
-
-                            <input type="number" name="attendees" class="short" required>
+                            <label>Date Filled *</label>
+                            <p><input type="date" class="short" name="date_filled" required></p>
                         </div>
                     </div>
                     <!-- ROW -->
@@ -464,7 +552,7 @@
 
         </div>
 
-    </section>
+</section>
 
 <!-- DONATION -->
     <section id="donation">
@@ -519,50 +607,39 @@
 
 </footer>
              
-<script src="../JS/sjb-booking-system.js"></script>
+<script src="../JS/sjb-booking-system.js?v=20260521"></script>
 
 <script>
-document.getElementById("contactForm").addEventListener("submit", function(e) {
-    e.preventDefault();
+if (typeof window.checkBookingStatus !== 'function') {
+    window.checkBookingStatus = function() {
+        alert('Booking status script did not load. Please refresh the page and try again.');
+    };
+}
 
-    const form = this; // store form reference
-    const formData = new FormData(form);
+var weddingForm = document.getElementById("weddingForm");
+if (weddingForm) {
+    weddingForm.addEventListener("submit", submitSacramentForm);
+}
 
-    fetch("sjb-contact-result.php", {
-        method: "POST",
-        body: formData
-    })
-    .then(res => res.text())
-    .then(data => {
-        alert("Form submitted successfully!"); // ✅ alert message
+var baptismForm = document.getElementById("baptismForm");
+if (baptismForm) {
+    baptismForm.addEventListener("submit", submitSacramentForm);
+}
 
-        form.reset(); // ✅ clear form fields
+var funeralForm = document.getElementById("funeralForm");
+if (funeralForm) {
+    funeralForm.addEventListener("submit", submitSacramentForm);
+}
 
-        document.getElementById("response").innerHTML = data;
-    })
-});
+var massRequestForm = document.getElementById("mass_req_form");
+if (massRequestForm) {
+    massRequestForm.addEventListener("submit", submitMassRequest);
+}
 
-document.getElementById("mass_req_form").addEventListener("submit", function(e) {
-    e.preventDefault();
-
-    const form = this;
-    const formData = new FormData(form);
-
-    fetch("mass-request-result.php", {
-        method: "POST",
-        body: formData
-    })
-    .then(res => res.text())
-    .then(data => {
-        alert("Mass & Blessing request submitted successfully!");
-
-        form.reset();
-    })
-    .catch(error => {
-        console.error(error);
-        alert("Something went wrong!");
-    });
-});
+var statusCheckBtn = document.getElementById('status-check-btn');
+if (statusCheckBtn) {
+    statusCheckBtn.addEventListener('click', checkBookingStatus);
+}
 </script>
 
 </body>
